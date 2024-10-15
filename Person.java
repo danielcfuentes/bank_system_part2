@@ -5,11 +5,13 @@ public abstract class Person {
     private List<Account> accounts;
     private String role;
 
-    // constrcutor no arg
+    // constrcutor
     public Person(String name, String role) {
         this.name = name;
         this.role = role;
     }
+
+    public Person(){}
 
     // getters and setters
     public String getName() {
