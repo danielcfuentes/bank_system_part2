@@ -1,4 +1,6 @@
 public class Credit extends Account {
+    //in here we are saying that the balance is negative
+    
     private double creditLimit;
     private double principle;
 
@@ -21,10 +23,22 @@ public class Credit extends Account {
     }
 
     public void borrow(double amount){
-        
+        if ((amount > 0) && ((Math.abs(balance) + amount) <= creditLimit)) {
+            balance -= amount;
+            principle += amount;
+            //log tanscation
+        }else{
+            throw new IllegalArgumentException("Not Valid Amount or Would Exceed Credit Limit");
+        }
     }
 
     public void pay(double amount){
-
+        if (amount > 0){
+            balance += amount;
+            principle -= amount;
+            //log
+        }else{
+            throw new IllegalArgumentException("Invalid Payment Amount");
+        }
     }
 }
