@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Person {
@@ -9,9 +10,12 @@ public abstract class Person {
     public Person(String name, String role) {
         this.name = name;
         this.role = role;
+        this.accounts = new ArrayList<>();
     }
 
-    public Person(){}
+    public Person(){
+        this.accounts = new ArrayList<>();
+    }
 
     // getters and setters
     public String getName() {
@@ -42,5 +46,20 @@ public abstract class Person {
     public abstract List<Account> inquireAnyAccount(String accountNumber);
 
     // method to pay another person
-    public void pay(Person receiver, double amount) {}
+    public void pay(Person receiver, Account fromAccount,Account toAccount, double amount) {
+        if(amount <= 0){
+            throw new IllegalArgumentException("Not valid amount");
+        }
+        if (!accounts.contains(fromAccount)){
+            throw new IllegalArgumentException("From Account does not belong to this person");
+        }
+        if(!receiver.getAccounts().contains(toAccount)){
+            throw new IllegalArgumentException("Destination account does not belong to the reciever's person");
+        }
+
+        fromAccount.withdraw(amount);
+        toAccount.deposit(amount);
+
+        //need to log
+    }
 }
