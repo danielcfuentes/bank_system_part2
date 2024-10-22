@@ -1,6 +1,6 @@
 public abstract class Account {
-    private double balance;
-    private String accountNumber;
+    protected double balance;
+    protected String accountNumber;
     
     public Account(String accountNumber, double balance) {
         this.accountNumber = accountNumber;
