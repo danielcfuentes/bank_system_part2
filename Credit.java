@@ -1,6 +1,15 @@
+/**
+ * Represents a credit account where the balance is negative, with a set credit limit.
+ */
 public class Credit extends Account {
-    //in here we are saying that the balance is negative
-    
+
+    /**
+     * Initializes a Credit account with an account number, balance, and credit limit.
+     * 
+     * @param accountNumber the account identifier
+     * @param balance the initial balance (negative value for credit)
+     * @param creditLimit the maximum credit limit
+     */
     private double creditLimit;
     private double principle;
 
@@ -26,6 +35,12 @@ public class Credit extends Account {
         return principle;
     }
 
+    /**
+     * Borrows a specified amount, increasing the balance and principle.
+     * 
+     * @param amount the amount to borrow
+     * @throws IllegalArgumentException if the amount is invalid or exceeds the credit limit
+     */
     public void borrow(double amount){
         if ((amount > 0) && ((Math.abs(balance) + amount) <= creditLimit)) {
             balance -= amount;
@@ -36,6 +51,12 @@ public class Credit extends Account {
         }
     }
 
+    /**
+     * Makes a payment towards the credit balance, reducing the principle.
+     * 
+     * @param amount the amount to pay
+     * @throws IllegalArgumentException if the amount is invalid
+     */
     public void pay(double amount){
         if (amount > 0){
             balance += amount;
