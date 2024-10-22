@@ -43,7 +43,7 @@ public abstract class Account {
         }
     }
     
-    // log transaction to the transaction log
+    // TODO: make this work
     public void logTransaction(String transaction) {
         return;
     }
