@@ -4,7 +4,11 @@ public class Credit extends Account {
     private double creditLimit;
     private double principle;
 
-    public Credit(){}
+    public Credit(String accountNumber, double balance, double creditLimit){
+        super(accountNumber, balance);
+        this.creditLimit = creditLimit;
+        this.principle = 0;
+    }
 
     public void setCreditLimit(double creditLimit){
         this.creditLimit = creditLimit;
