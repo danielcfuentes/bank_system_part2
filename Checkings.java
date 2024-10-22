@@ -7,6 +7,10 @@ public class Checkings extends Account{
         this.overdraftLimit = overdraftLimit;
     }
 
+    public double getOverdraftLimit(){
+        return overdraftLimit;
+    }
+
     public void tansfer(Account to, double amount){
         if ( amount > 0 && (balance - amount) >= overdraftLimit){
             this.withdraw(amount);
