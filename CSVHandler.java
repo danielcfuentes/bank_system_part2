@@ -5,118 +5,80 @@ import java.util.*;
 public class CSVHandler {
     private static final String CSV_FILE = "CS 3331 - Bank Users.csv";
 
-    /**
-     * Loads customer data from CSV file
-     * @return Map of customers with names as keys
-     */
     public Map<String, Customer> loadCustomerData() {
         Map<String, Customer> customers = new HashMap<>();
         try {
-            List<String> lines = Files.readAllLines(Paths.get(CSV_FILE));
-            lines.remove(0); // Remove header
-
-            for (String line : lines) {
+            BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE));
+            String line = reader.readLine(); // Skip header
+            
+            while ((line = reader.readLine()) != null) {
                 try {
-                    // Split line while preserving commas in quoted values
-                    String[] data = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                    // Split by comma but preserve commas inside quotes
+                    String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                     
-                    // Clean the data
-                    for (int i = 0; i < data.length; i++) {
-                        data[i] = data[i].trim().replace("\"", "");
+                    // Clean the data (remove quotes and trim)
+                    for (int i = 0; i < parts.length; i++) {
+                        parts[i] = parts[i].replace("\"", "").trim();
                     }
                     
-                    // Create customer name and ID
-                    String fullName = data[1].trim() + " " + data[2].trim();
-                    Customer customer = new Customer(fullName, data[0].trim());
+                    // Create customer
+                    String fullName = parts[1] + " " + parts[2];
+                    Customer customer = new Customer(fullName, parts[0]);
                     
-                    // Create accounts - using specific indexes for account data
+                    // Create accounts
                     List<Account> accounts = new ArrayList<>();
-                    
-                    // Add checking account - indexes 6 and 7
-                    String checkingNumber = data[6].trim();
-                    double checkingBalance = Double.parseDouble(data[7].trim());
-                    accounts.add(new Checkings(checkingNumber, checkingBalance));
-                    
-                    // Add savings account - indexes 8 and 9
-                    String savingsNumber = data[8].trim();
-                    double savingsBalance = Double.parseDouble(data[9].trim());
-                    accounts.add(new Savings(savingsNumber, savingsBalance));
-                    
-                    // Add credit account - indexes 10, 11, and 12
-                    String creditNumber = data[10].trim();
-                    double creditMax = Double.parseDouble(data[11].trim());
-                    double creditBalance = Double.parseDouble(data[12].trim());
-                    accounts.add(new Credit(creditNumber, creditBalance, creditMax));
+                    accounts.add(new Checkings(parts[6], Double.parseDouble(parts[7])));
+                    accounts.add(new Savings(parts[8], Double.parseDouble(parts[9])));
+                    accounts.add(new Credit(parts[10], Double.parseDouble(parts[12]), 
+                                         Double.parseDouble(parts[11])));
                     
                     customer.setAccounts(accounts);
                     customers.put(fullName, customer);
                     
-                    // Debug print
-                    System.out.println("Loaded customer: " + fullName); // This helps see what names are actually loaded
-                    
                 } catch (Exception e) {
-                    System.out.println("Error processing line: " + line);
-                    System.out.println("Error details: " + e.getMessage());
+                    System.out.println("Error processing line: " + e.getMessage());
                 }
             }
-        } catch (Exception e) {
+            reader.close();
+        } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
         return customers;
     }
 
-    /**
-     * Saves updated customer data back to CSV
-     * @param customers Map of customers to save
-     */
     public void saveCustomerData(Map<String, Customer> customers) {
         try {
+            // First read all lines to keep original data
             List<String> lines = Files.readAllLines(Paths.get(CSV_FILE));
             List<String> newLines = new ArrayList<>();
             newLines.add(lines.get(0)); // Keep header
             
-            // Create a map of customer IDs to their data for easier lookup
-            Map<String, String[]> dataMap = new HashMap<>();
+            // Process each line
             for (int i = 1; i < lines.size(); i++) {
-                String[] data = lines.get(i).split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                dataMap.put(data[0].trim(), data);
-            }
-            
-            // Update data with new balances
-            for (Customer customer : customers.values()) {
-                String[] data = dataMap.get(customer.getCustomerID());
-                if (data != null) {
-                    List<Account> accounts = customer.getAccounts();
-                    
-                    // Update balances in data array
-                    if (accounts.size() >= 3) {
-                        data[7] = String.format("%.2f", accounts.get(0).getBalance()); // Checking
-                        data[9] = String.format("%.2f", accounts.get(1).getBalance()); // Savings
-                        data[12] = String.format("%.2f", accounts.get(2).getBalance()); // Credit
-                    }
-                    
-                    // Reconstruct the line with proper formatting
-                    StringBuilder line = new StringBuilder();
-                    for (int i = 0; i < data.length; i++) {
-                        // Add quotes around strings that might contain commas
-                        if (i == 4 || i == 5) { // Address and phone number
-                            line.append("\"").append(data[i].trim()).append("\"");
-                        } else {
-                            line.append(data[i].trim());
-                        }
-                        if (i < data.length - 1) {
-                            line.append(",");
-                        }
-                    }
-                    newLines.add(line.toString());
+                String[] parts = lines.get(i).split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                String fullName = parts[1] + " " + parts[2];
+                Customer customer = customers.get(fullName);
+                
+                if (customer != null) {
+                    // Update only the balance fields
+                    parts[7] = String.format("%.2f", customer.getAccounts().get(0).getBalance());
+                    parts[9] = String.format("%.2f", customer.getAccounts().get(1).getBalance());
+                    parts[12] = String.format("%.2f", customer.getAccounts().get(2).getBalance());
                 }
+                
+                // Join the parts back together
+                newLines.add(String.join(",", parts));
             }
             
-            Files.write(Paths.get(CSV_FILE), newLines);
+            // Write back to file
+            FileWriter writer = new FileWriter(CSV_FILE);
+            for (String line : newLines) {
+                writer.write(line + "\n");
+            }
+            writer.close();
             
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error saving data: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }
