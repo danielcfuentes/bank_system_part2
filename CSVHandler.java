@@ -2,7 +2,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-public class Data {
+public class CSVHandler {
     private static final String CSV_FILE = "CS 3331 - Bank Users.csv";
 
     /**
