@@ -1,0 +1,27 @@
+[2024-10-23 17:23:52] Bank system initialized
+[2024-10-23 17:24:10] Daniel A made a balance inquiry on 1078. Balance: $857.56
+[2024-10-23 17:24:10] Daniel A made a balance inquiry on 2078. Balance: $4000.00
+[2024-10-23 17:24:10] Daniel A made a balance inquiry on 3078. Balance: $-786.93
+[2024-10-23 17:24:36] Withdrawal of $1000.00 from 2078. New balance: $3000.00
+[2024-10-23 17:24:36] Daniel A withdrew $1000.00 from 2078
+[2024-10-23 17:24:39] Daniel A made a balance inquiry on 1078. Balance: $857.56
+[2024-10-23 17:24:39] Daniel A made a balance inquiry on 2078. Balance: $3000.00
+[2024-10-23 17:24:39] Daniel A made a balance inquiry on 3078. Balance: $-786.93
+[2024-10-23 17:24:52] Deposit of $1000.00 to 2078. New balance: $4000.00
+[2024-10-23 17:24:52] Daniel A deposited $1000.00 to 2078
+[2024-10-23 17:24:58] System shutdown initiated
+[2024-10-23 17:24:58] Customer data saved
+Bank system initialized
+Daniel A made a balance inquiry on 1078. Balance: $857.56
+Daniel A made a balance inquiry on 2078. Balance: $4000.00
+Daniel A made a balance inquiry on 3078. Balance: $-786.93
+System shutdown initiated
+Customer data saved
+Bank system initialized
+Daniel A made a balance inquiry on 1078. Balance: $857.56
+Daniel A made a balance inquiry on 2078. Balance: $4000.00
+Daniel A made a balance inquiry on 3078. Balance: $-786.93
+Bank system initialized
+Daniel A made a balance inquiry on 1078. Balance: $857.56
+Daniel A made a balance inquiry on 2078. Balance: $4000.00
+Daniel A made a balance inquiry on 3078. Balance: $-786.93
