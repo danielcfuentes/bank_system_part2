@@ -25,9 +25,11 @@ public class RunBank {
     private static void initialize() {
         scanner = new Scanner(System.in);
         logger = new TransactionLog();
+        Account.setTransactionLog(logger); // Set the logger for all accounts
         csvHandler = new CSVHandler();
         customers = csvHandler.loadCustomerData();
         operations = new BankOperations(customers, logger);
+        
     }
 
     private static void runMainMenu() {
