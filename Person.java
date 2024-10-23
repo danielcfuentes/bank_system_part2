@@ -1,65 +1,72 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Person {
+    // Store person's name
     private String name;
+    
+    // List to store all accounts belonging to this person
     private List<Account> accounts;
-    private String role;
-
-    // constrcutor
-    public Person(String name, String role) {
+    
+    // Constructor that initializes name and empty accounts list
+    public Person(String name) {
         this.name = name;
-        this.role = role;
         this.accounts = new ArrayList<>();
     }
-
-    public Person(){
-        this.accounts = new ArrayList<>();
-    }
-
-    // getters and setters
+    
+    // Getter for name
     public String getName() {
         return name;
     }
-
+    
+    // Setter for name
     public void setName(String name) {
         this.name = name;
     }
-
+    
+    // Getter for accounts
     public List<Account> getAccounts() {
         return accounts;
     }
-
+    
+    // Setter for accounts
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
-
-    public String getRole() {
-        return role;
+    
+    // Method 1: Customer inquiring their own account by account number
+    public List<Account> inquireAccount(String accountNumber) {
+        return accounts.stream()
+            .filter(account -> account.getAccountNumber().equals(accountNumber))
+            .collect(Collectors.toList());
     }
-
-    public void setRole(String role) {
-        this.role = role;
+    
+    // Method 2: Bank manager inquiring any account by account number (static method)
+    public static List<Account> inquireAccount(String accountNumber, Map<String, Customer> allCustomers) {
+        // Search all customers for the account
+        for (Customer customer : allCustomers.values()) {
+            List<Account> found = customer.inquireAccount(accountNumber);
+            if (!found.isEmpty()) {
+                //log
+                return found;
+            }
+        }
+        return new ArrayList<>();
     }
-
-    // method to check any account based on account number
-    public abstract List<Account> inquireAnyAccount(String accountNumber);
-
-    // method to pay another person
-    public void pay(Person receiver, Account fromAccount,Account toAccount, double amount) {
-        if(amount <= 0){
-            throw new IllegalArgumentException("Not valid amount");
+    
+    // Method 3: Bank manager inquiring accounts by customer name (static method)
+    public static List<Account> inquireAccount(String firstName, String lastName, Map<String, Customer> allCustomers) {
+        String fullName = firstName + " " + lastName;
+        Customer customer = allCustomers.get(fullName);
+        if (customer != null) {
+            // log
+            return customer.getAccounts();
         }
-        if (!accounts.contains(fromAccount)){
-            throw new IllegalArgumentException("From Account does not belong to this person");
-        }
-        if(!receiver.getAccounts().contains(toAccount)){
-            throw new IllegalArgumentException("Destination account does not belong to the reciever's person");
-        }
-
-        fromAccount.withdraw(amount);
-        toAccount.deposit(amount);
-
-        //need to log
+        return new ArrayList<>();
+    }
+    
+    // Get all accounts for this person
+    public List<Account> inquireAllAccounts() {
+        return new ArrayList<>(accounts);
     }
 }
