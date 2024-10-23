@@ -1,30 +1,21 @@
-// Customer class - Represents a bank customer, extends Person
 public class Customer extends Person {
-    // Unique identifier for the customer
+    // Unique identifier for customer
     private String customerID;
-    
-    // Default constructor
-    public Customer() {
-        // Call parent (Person) constructor with no arguments
-        super();
-    }
     
     // Constructor with name and ID
     public Customer(String name, String customerID) {
-        // Call parent constructor with name and "Customer" role
-        super(name, "Customer");
-        // Set the customer's ID
+        // Call parent constructor with name
+        super(name);
         this.customerID = customerID;
     }
     
-    // Get customer's ID
+    // Getter for customer ID
     public String getCustomerID() {
         return customerID;
     }
     
-    // Set customer's ID
+    // Setter for customer ID
     public void setCustomerID(String customerID) {
         this.customerID = customerID;
     }
-
 }
