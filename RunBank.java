@@ -1,63 +1,66 @@
-import java.util.Scanner;
+import java.util.*;
 
 /**
- * Start point for running the bank application.
+ * Main class for the banking application.
+ * @author Daniel Fuentes, Rogelio Lozano
+ * @version 1.0
  */
 public class RunBank {
-
     /**
-     * Main method to start the bank system.
-     * 
+     * Main starting point for the banking application.
+     * Initializes the system, presents menu options, and user interaction.
      */
     public static void main(String[] args) {
+        /** Stores all customer data */
+        Map<String, Customer> customers;
+        /** Handles user input */
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
+        /** Records all transactions */
+        TransactionLog logger = new TransactionLog();
+        /** Manages CSV file operations */
+        CSVHandler csvHandler = new CSVHandler();
         
-        while (running) {
-            System.out.println("\n=== Banking Menu ===");
-            System.out.println("1. Inquire about a balance.");
-            System.out.println("2. Make Deposit");
-            System.out.println("3. Make Withdrawal");
-            System.out.println("4. Transfer Money");
-            System.out.println("5. Exit");
-            System.out.print("Enter your choice (1-5): ");
+        try {
+            // loads data
+            customers = csvHandler.loadCustomerData();
+            BankOperations operations = new BankOperations(customers, logger);
 
-            try {
-                int option = scanner.nextInt();
-                scanner.nextLine();
-
-                switch (option) {
-                    case 1:
-                        continue;
-                    case 2:
-                        continue;
-                    case 3:
-                        continue;
-                    case 4:
-                        continue;
-                    case 5:
-                        running = false;
-                        System.out.println("Thank you for using our Bank System:)");
+            // main menu loop
+            while (true) {
+                System.out.println("\nWelcome to El Paso Miners Bank");
+                System.out.println("1. Individual Customer");
+                System.out.println("2. Bank Manager");
+                System.out.println("Type 'EXIT' to quit");
+                System.out.println("_________________________");
+                
+                String choice = scanner.nextLine();
+                if (choice.equalsIgnoreCase("EXIT")) {
+                    break;
+                }
+                
+                switch (choice) {
+                    case "1":
+                        operations.handleCustomer();
+                        break;
+                    case "2":
+                        operations.handleBankManager();
                         break;
                     default:
-                        System.out.println("Invalid choice. Please enter a number between 1 and 5!");
-
+                        System.out.println("Invalid choice. Please try again.");
                 }
-
-            } catch (Exception e) {
-
             }
-        }
-    }
 
-    /**
-     * Checks the role of the specified user.
-     * 
-     * @param person the person whose role is to be checked
-     * @return the role of the user, or null if not found
-     */
-    public String checkUserRole(Person person) {
-        // check user role
-        return null;
+            // save and exit
+            csvHandler.saveCustomerData(customers);
+            logger.exitUpdate();
+            System.out.println("____________________");
+            System.out.println("Thank you for using El Paso Miners Bank!");
+            
+        } catch (Exception e) {
+            System.out.println("Fatal error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            scanner.close();
+        }
     }
 }

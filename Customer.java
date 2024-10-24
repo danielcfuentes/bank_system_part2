@@ -1,20 +1,36 @@
+/**
+ * Represents a bank customer that extends the Person class.
+ * Contains customer-specific information and functionality.
+ * @author Daniel Fuentes, Rogelio Lozano
+ * @version 1.0
+ */
 public class Customer extends Person {
-    // Unique identifier for customer
+    /** Unique identifier for each customer */
     private String customerID;
     
-    // Constructor with name and ID
+    /**
+     * Creates a new customer.
+     * @param name the customer's full name
+     * @param customerID unique id for the customer
+     */
     public Customer(String name, String customerID) {
-        // Call parent constructor with name
+        //call parent constructor with name
         super(name);
         this.customerID = customerID;
     }
     
-    // Getter for customer ID
+    /**
+     * Gets the customer's id.
+     * @return the customer's unique id
+     */
     public String getCustomerID() {
         return customerID;
     }
     
-    // Setter for customer ID
+    /**
+     * Sets the customer's ID.
+     * @param customerID new unique id for the customer
+     */
     public void setCustomerID(String customerID) {
         this.customerID = customerID;
     }
