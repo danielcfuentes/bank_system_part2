@@ -1,18 +1,31 @@
 import java.util.*;
 
+/**
+ * Main class for the banking application.
+ * @author Daniel Fuentes, Rogelio Lozano
+ * @version 1.0
+ */
 public class RunBank {
+    /**
+     * Main starting point for the banking application.
+     * Initializes the system, presents menu options, and user interaction.
+     */
     public static void main(String[] args) {
+        /** Stores all customer data */
         Map<String, Customer> customers;
+        /** Handles user input */
         Scanner scanner = new Scanner(System.in);
+        /** Records all transactions */
         TransactionLog logger = new TransactionLog();
+        /** Manages CSV file operations */
         CSVHandler csvHandler = new CSVHandler();
         
         try {
-            // Load data
+            // loads data
             customers = csvHandler.loadCustomerData();
             BankOperations operations = new BankOperations(customers, logger);
 
-            // Main menu loop
+            // main menu loop
             while (true) {
                 System.out.println("\nWelcome to El Paso Miners Bank");
                 System.out.println("1. Individual Customer");
@@ -37,7 +50,7 @@ public class RunBank {
                 }
             }
 
-            // Save and exit
+            // save and exit
             csvHandler.saveCustomerData(customers);
             logger.exitUpdate();
             System.out.println("____________________");

@@ -1,16 +1,33 @@
 import java.util.*;
-
+/**
+ * Manages banking operations for customers and bank managers.
+ * Handles transactions, inquiries, and account management.
+ * @author Daniel Fuentes, Rogelio Lozano
+ * @version 1.0
+ */
 public class BankOperations {
+    /** Map of customer names to Customer objects */
     private Map<String, Customer> customers;
+    /** Scanner for reading user input */
     private Scanner scanner;
+    /** Logger for recording transactions into log */
     private TransactionLog logger;
 
+    /**
+     * Initializes bank operations with customer data and transaction logging.
+     * @param customers map of customer names to Customer objects
+     * @param logger transaction logging system
+     */
     public BankOperations(Map<String, Customer> customers, TransactionLog logger) {
         this.customers = customers;
         this.scanner = new Scanner(System.in);
         this.logger = logger;
     }
 
+    /**
+     * Handles customer login and menu operations.
+     * Provides interface for account inquiries, deposits, withdrawals, transfers, and payments.
+     */
     public void handleCustomer() {
         System.out.println("Enter your name:");
         String name = scanner.nextLine();
@@ -37,22 +54,30 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles bank manager operations.
+     * Provides interface for account inquiries by name or account number.
+     */
     public void handleBankManager() {
         System.out.println("\nA. Inquire account by name");
         System.out.println("B. Inquire account by account number");
+        System.out.println("__________________");
         
         String choice = scanner.nextLine().toUpperCase();
         
         switch (choice) {
             case "A":
                 System.out.println("Enter first name:");
+                System.out.println("__________________");
                 String firstName = scanner.nextLine();
                 System.out.println("Enter last name:");
+                System.out.println("__________________");
                 String lastName = scanner.nextLine();
                 handleManagerNameInquiry(firstName + " " + lastName);
                 break;
             case "B":
                 System.out.println("Enter account number:");
+                System.out.println("__________________");
                 String accountNum = scanner.nextLine();
                 handleManagerAccountInquiry(accountNum);
                 break;
@@ -61,6 +86,11 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Processes customer menu choices and directs to appropriate handling method.
+     * @param choice the menu option selected by the customer
+     * @param customer the customer making the request
+     */
     private void handleCustomerChoice(String choice, Customer customer) {
         try {
             switch (choice) {
@@ -87,15 +117,22 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles balance inquiry for all accounts owned by a customer.
+     * Logs the inquiry transaction.
+     * @param customer the customer whose balances are being inquired
+     */
     private void handleBalanceInquiry(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
         System.out.println("\nYour account balances:");
+        System.out.println("__________________");
         for (Account account : accounts) {
             System.out.printf("%s (%s): $%.2f%n", 
                 account.getClass().getSimpleName(), 
                 account.getAccountNumber(), 
                 account.getBalance()
             );
+            System.out.println("__________________");
             logger.logTransaction(
                 String.format("%s made a balance inquiry on %s. Balance: $%.2f",
                     customer.getName(),
@@ -105,9 +142,15 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles deposit operation for a selected account.
+     * Prompts for account selection and amount, then processes the deposit.
+     * @param customer the customer making the deposit
+     */
     private void handleDeposit(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
         System.out.println("\nSelect account for deposit:");
+        System.out.println("__________________");
         for (int i = 0; i < accounts.size(); i++) {
             System.out.printf("%d. %s ($%.2f)%n", 
                 i + 1, 
@@ -115,19 +158,20 @@ public class BankOperations {
                 accounts.get(i).getBalance()
             );
         }
-
         try {
             System.out.print("Enter choice (1-" + accounts.size() + "): ");
             int accountChoice = Integer.parseInt(scanner.nextLine()) - 1;
             
             if (accountChoice >= 0 && accountChoice < accounts.size()) {
                 System.out.println("Enter amount to deposit:");
+                System.out.println("__________________");
                 double amount = Double.parseDouble(scanner.nextLine());
                 
                 Account selectedAccount = accounts.get(accountChoice);
                 selectedAccount.deposit(amount);
                 
                 System.out.printf("Successfully deposited $%.2f%n", amount);
+                System.out.println("__________________");
                 logger.logTransaction(String.format("%s deposited $%.2f to %s", 
                     customer.getName(), amount, selectedAccount.getAccountNumber()));
             } else {
@@ -140,9 +184,15 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles withdrawal operation for a selected account.
+     * Prompts for account selection and amount, then processes the withdrawal.
+     * @param customer the customer making the withdrawal
+     */
     private void handleWithdrawal(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
         System.out.println("\nSelect account for withdrawal:");
+        System.out.println("__________________");
         for (int i = 0; i < accounts.size(); i++) {
             System.out.printf("%d. %s ($%.2f)%n", 
                 i + 1, 
@@ -153,10 +203,12 @@ public class BankOperations {
 
         try {
             System.out.print("Enter choice (1-" + accounts.size() + "): ");
+            System.out.println("__________________");
             int accountChoice = Integer.parseInt(scanner.nextLine()) - 1;
             
             if (accountChoice >= 0 && accountChoice < accounts.size()) {
                 System.out.println("Enter amount to withdraw:");
+                System.out.println("__________________");
                 double amount = Double.parseDouble(scanner.nextLine());
                 
                 Account selectedAccount = accounts.get(accountChoice);
@@ -175,10 +227,15 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles transfer between accounts owned by the same customer.
+     * Asks for source and destination accounts and amount, then process the transfer.
+     * @param customer the customer making the transfer
+     */
     private void handleTransfer(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
         
-        // Display accounts
+        //display accounts of customer
         System.out.println("\nYour accounts:");
         for (int i = 0; i < accounts.size(); i++) {
             System.out.printf("%d. %s ($%.2f)%n", 
@@ -189,11 +246,11 @@ public class BankOperations {
         }
 
         try {
-            // Get source account
+            //get account we are remvong from
             System.out.print("Enter source account number (1-" + accounts.size() + "): ");
             int fromAccount = Integer.parseInt(scanner.nextLine()) - 1;
             
-            // Get destination account
+            //get the account we are adding money to
             System.out.print("Enter destination account number (1-" + accounts.size() + "): ");
             int toAccount = Integer.parseInt(scanner.nextLine()) - 1;
             
@@ -228,9 +285,15 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles payment to another customer's account.
+     * Prompts for recipient, source and destination accounts, and amount, then processes the payment.
+     * It checks and vlaidates that accounts chosen are correct inputs and verfies that account exites for that person
+     * @param customer the customer making the payment
+     */
     private void handlePayment(Customer customer) {
         try {
-            // Get recipient
+            //get recipient
             System.out.println("Enter recipient's name:");
             String recipientName = scanner.nextLine();
             Customer recipient = customers.get(recipientName);
@@ -240,7 +303,7 @@ public class BankOperations {
                 return;
             }
 
-            // Show payer's accounts
+            //show payer's accounts
             List<Account> payerAccounts = customer.inquireAllAccounts();
             System.out.println("\nYour accounts:");
             for (int i = 0; i < payerAccounts.size(); i++) {
@@ -251,11 +314,11 @@ public class BankOperations {
                 );
             }
 
-            // Get source account
+            //get source account
             System.out.print("Select your account (1-" + payerAccounts.size() + "): ");
             int fromAccount = Integer.parseInt(scanner.nextLine()) - 1;
 
-            // Show recipient's accounts
+            //show recipient's accounts
             List<Account> recipientAccounts = recipient.inquireAllAccounts();
             System.out.println("\nRecipient's accounts:");
             for (int i = 0; i < recipientAccounts.size(); i++) {
@@ -265,7 +328,7 @@ public class BankOperations {
                 );
             }
 
-            // Get destination account
+            //get destination account
             System.out.print("Select recipient's account (1-" + recipientAccounts.size() + "): ");
             int toAccount = Integer.parseInt(scanner.nextLine()) - 1;
 
@@ -293,6 +356,10 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles bank manager inquiry of customer accounts by customer name.
+     * @param fullName the full name of the customer to look up
+     */
     private void handleManagerNameInquiry(String fullName) {
         Customer customer = customers.get(fullName);
         if (customer != null) {
@@ -302,6 +369,10 @@ public class BankOperations {
         }
     }
 
+    /**
+     * Handles bank manager inquiry of customer accounts by account number.
+     * @param accountNumber the account number to look up
+     */
     private void handleManagerAccountInquiry(String accountNumber) {
         for (Customer customer : customers.values()) {
             for (Account account : customer.getAccounts()) {

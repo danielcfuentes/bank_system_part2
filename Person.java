@@ -1,44 +1,69 @@
 import java.util.*;
 
+/**
+ * Abstract class for representing people in the banking system.
+ * Provides common functions for managing accounts and transactions.
+ * @author Daniel Fuentes, Rogelio Lozano
+ * @version 1.0
+ */
 public abstract class Person {
-    // Store person's name
+    /** The person's full name */
     private String name;
     
-    // List to store accounts
+    /** List of bank accounts owned by this person */
     private List<Account> accounts;
     
-    // Constructor
-    public Person(String name) {
+    /**
+     * Creates a new person with gvien name.
+     * @param name the person's full name
+     */    
+     public Person(String name) {
         this.name = name;
         this.accounts = new ArrayList<>();
     }
     
-    // Getter for name
+    /**
+     * Gets the person's name.
+     * @return the person's full name
+     */
     public String getName() {
         return name;
     }
     
-    // Setter for name
+    /**
+     * Sets the person's name.
+     * @param name new full name for the person
+     */
     public void setName(String name) {
         this.name = name;
     }
     
-    // Getter for accounts
+    /**
+     * Gets all acounts owned by this person.
+     * @return list of all accounts
+     */
     public List<Account> getAccounts() {
         return accounts;
     }
     
-    // Setter for accounts
+    /**
+     * Sets the list of accounts for this person.
+     * @param accounts new list of accounts to assign
+     */
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
     
-    // Method 1: Customer inquiring their own account by account number
+    /**
+     * Finds accounts with the same given account number.
+     * @param accountNumber account number to search for
+     * @return list of matching accounts
+     */
     public List<Account> inquireAccount(String accountNumber) {
-        // Create new list for matching accounts
+        //create new list for matching accounts
         List<Account> foundAccounts = new ArrayList<>();
         
-        // Loop through accounts to find matches
+        //loop through accounts to find matches
         for (Account account : accounts) {
             if (account.getAccountNumber().equals(accountNumber)) {
                 foundAccounts.add(account);
@@ -47,77 +72,88 @@ public abstract class Person {
         return foundAccounts;
     }
     
-    // Method 2: Bank manager inquiring any account by account number
+    /**
+     * Method for bank managers to find accounts by account number.
+     * @param accountNumber account number to search for
+     * @param allCustomers map of all customers in the system
+     * @return list of same accounts
+     */
     public static List<Account> inquireAccount(String accountNumber, Map<String, Customer> allCustomers) {
-        // Look through all customers
+        //look through all customers
         for (Customer customer : allCustomers.values()) {
-            // Check each customer's accounts
+            //check each customer's accounts
             for (Account account : customer.getAccounts()) {
                 if (account.getAccountNumber().equals(accountNumber)) {
-                    // Create list for found account
+                    //create list for found account
                     List<Account> found = new ArrayList<>();
                     found.add(account);
-                    
-                    // Log the inquiry
                     return found;
                 }
             }
         }
-        // Return empty list if not found
+        //return empty list if not found
         return new ArrayList<>();
     }
     
-    // Method 3: Bank manager inquiring accounts by customer name
+    /**
+     * Method for bank managers to find accounts by customer name.
+     * @param firstName customer's first name
+     * @param lastName customer's lsat name
+     * @param allCustomers map of all customers in the system
+     * @return list of customer's accounts
+     */
     public static List<Account> inquireAccount(String firstName, String lastName, Map<String, Customer> allCustomers) {
-        // Combine first and last name
+        //combine first and last name
         String fullName = firstName + " " + lastName;
         
-        // Look up customer
+        //look up customer in our map
         Customer customer = allCustomers.get(fullName);
         
         if (customer != null) {
-            // Log the inquiry
-            // Return copy of customer's accounts
+            //return copy of customer's accounts
             return new ArrayList<>(customer.getAccounts());
         }
         
-        // Return empty list if customer not found
+        //return empty list if customer not found
         return new ArrayList<>();
     }
     
-    // Get all accounts
+    /**
+     * Gets all accounts owned by this person.
+     * @return list of all accounts
+     */
     public List<Account> inquireAllAccounts() {
-        // Return a copy of accounts list
+        //return a copy of accounts list
         return new ArrayList<>(accounts);
     }
 
-      // Method to pay another person
+    /**
+     * Makes a payment to another person's account.
+     * @param receiver person receiving the payment
+     * @param fromAccount account to take payment from
+     * @param toAccount account to send money to
+     * @param amount amount fo money to pay
+     */
     public void pay(Person receiver, Account fromAccount, Account toAccount, double amount) {
-        // Check if amount is valid
+        //check if amount is valid
         if (amount <= 0) {
             throw new IllegalArgumentException("Payment amount must be positive");
         }
         
-        // Check if sending account belongs to this person
+        //check if sending account belongs to this person
         if (!this.accounts.contains(fromAccount)) {
             throw new IllegalArgumentException("Source account does not belong to you");
         }
         
-        // Check if receiving account belongs to receiver
+        //check if receiving account belongs to receiver
         if (!receiver.getAccounts().contains(toAccount)) {
             throw new IllegalArgumentException("Destination account does not belong to receiver");
         }
         
+        //if everythigng is found then do the paying process
         try {
-            // Withdraw from sender's account
             fromAccount.withdraw(amount);
-            
-            // Deposit to receiver's account
             toAccount.deposit(amount);
-            
-            // Log the transaction
-            
-            // Log receiver's updated balance
             
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Payment failed: " + e.getMessage());
