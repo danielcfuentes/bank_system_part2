@@ -10,8 +10,8 @@ public class Savings extends Account {
      * @param accountNumber the account identifier
      * @param balance the initial balance
      */
-    public Savings(String accountNUmber, double balance){
-        super(accountNUmber, balance);
+    public Savings(String accountNumber, double balance){
+        super(accountNumber, balance);
     }
 
     /**
