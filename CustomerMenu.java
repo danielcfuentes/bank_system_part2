@@ -2,18 +2,22 @@ import java.util.*;
 
 /**
  * Implementation of Menu interface for customer operations.
- * Handles display and processing of customer menu options.
+ * Handles display and processing of customer-specific menu options.
  * @author Daniel Fuentes, Rogelio Lozano
  * @version 2.0
  */
 public class CustomerMenu implements Menu {
+    /** Scanner for reading user input */
     private Scanner scanner;
+    /** The customer using this menu */
     private Customer customer;
+    /** Logger for recording transactions */
     private TransactionLog logger;
+    /** Map of all customers in the system */
     private Map<String, Customer> customers;
 
     /**
-     * Creates a new customer menu.
+     * Creates a new customer menu instance.
      * @param customer the customer using the menu
      * @param logger transaction logging system
      * @param customers map of all customers in the system
@@ -42,19 +46,19 @@ public class CustomerMenu implements Menu {
         try {
             switch (choice) {
                 case "1":
-                    handleBalanceInquiry();
+                    handleBalanceInquiry(customer);
                     return true;
                 case "2":
-                    handleDeposit();
+                    handleDeposit(customer);
                     return true;
                 case "3":
-                    handleWithdrawal();
+                    handleWithdrawal(customer);
                     return true;
                 case "4":
-                    handleTransfer();
+                    handleTransfer(customer);
                     return true;
                 case "5":
-                    handlePayment();
+                    handlePayment(customer);
                     return true;
                 case "6":
                     return false;
@@ -74,9 +78,11 @@ public class CustomerMenu implements Menu {
     }
 
     /**
-     * Handles balance inquiry for all accounts owned by the customer.
+     * Handles balance inquiry for all accounts owned by a customer.
+     * Logs the inquiry transaction.
+     * @param customer the customer whose balances are being inquired
      */
-    private void handleBalanceInquiry() {
+    private void handleBalanceInquiry(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
         System.out.println("\nYour account balances:");
         System.out.println("__________________");
@@ -98,8 +104,10 @@ public class CustomerMenu implements Menu {
 
     /**
      * Handles deposit operation for a selected account.
+     * Prompts for account selection and amount, then processes the deposit.
+     * @param customer the customer making the deposit
      */
-    private void handleDeposit() {
+    private void handleDeposit(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
         System.out.println("\nSelect account for deposit:");
         System.out.println("__________________");
@@ -110,7 +118,6 @@ public class CustomerMenu implements Menu {
                 accounts.get(i).getBalance()
             );
         }
-        
         try {
             System.out.print("Enter choice (1-" + accounts.size() + "): ");
             int accountChoice = Integer.parseInt(getInput()) - 1;
@@ -125,12 +132,8 @@ public class CustomerMenu implements Menu {
                 
                 System.out.printf("Successfully deposited $%.2f%n", amount);
                 System.out.println("__________________");
-                logger.logTransaction(
-                    String.format("%s deposited $%.2f to %s", 
-                        customer.getName(), 
-                        amount, 
-                        selectedAccount.getAccountNumber())
-                );
+                logger.logTransaction(String.format("%s deposited $%.2f to %s", 
+                    customer.getName(), amount, selectedAccount.getAccountNumber()));
             } else {
                 System.out.println("Invalid account selection.");
             }
@@ -143,8 +146,10 @@ public class CustomerMenu implements Menu {
 
     /**
      * Handles withdrawal operation for a selected account.
+     * Prompts for account selection and amount, then processes the withdrawal.
+     * @param customer the customer making the withdrawal
      */
-    private void handleWithdrawal() {
+    private void handleWithdrawal(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
         System.out.println("\nSelect account for withdrawal:");
         System.out.println("__________________");
@@ -170,12 +175,8 @@ public class CustomerMenu implements Menu {
                 selectedAccount.withdraw(amount);
                 
                 System.out.printf("Successfully withdrew $%.2f%n", amount);
-                logger.logTransaction(
-                    String.format("%s withdrew $%.2f from %s", 
-                        customer.getName(), 
-                        amount, 
-                        selectedAccount.getAccountNumber())
-                );
+                logger.logTransaction(String.format("%s withdrew $%.2f from %s", 
+                    customer.getName(), amount, selectedAccount.getAccountNumber()));
             } else {
                 System.out.println("Invalid account selection.");
             }
@@ -187,10 +188,14 @@ public class CustomerMenu implements Menu {
     }
 
     /**
-     * Handles transfer between customer's accounts.
+     * Handles transfer between accounts owned by the same customer.
+     * Asks for source and destination accounts and amount, then processes the transfer.
+     * @param customer the customer making the transfer
      */
-    private void handleTransfer() {
+    private void handleTransfer(Customer customer) {
         List<Account> accounts = customer.inquireAllAccounts();
+        
+        // Display accounts
         System.out.println("\nYour accounts:");
         for (int i = 0; i < accounts.size(); i++) {
             System.out.printf("%d. %s ($%.2f)%n", 
@@ -201,9 +206,11 @@ public class CustomerMenu implements Menu {
         }
 
         try {
+            // Get source account
             System.out.print("Enter source account number (1-" + accounts.size() + "): ");
             int fromAccount = Integer.parseInt(getInput()) - 1;
             
+            // Get destination account
             System.out.print("Enter destination account number (1-" + accounts.size() + "): ");
             int toAccount = Integer.parseInt(getInput()) - 1;
             
@@ -225,13 +232,9 @@ public class CustomerMenu implements Menu {
                 destination.deposit(amount);
                 
                 System.out.printf("Successfully transferred $%.2f%n", amount);
-                logger.logTransaction(
-                    String.format("%s transferred $%.2f from %s to %s", 
-                        customer.getName(), 
-                        amount, 
-                        source.getAccountNumber(), 
-                        destination.getAccountNumber())
-                );
+                logger.logTransaction(String.format("%s transferred $%.2f from %s to %s", 
+                    customer.getName(), amount, source.getAccountNumber(), 
+                    destination.getAccountNumber()));
             } else {
                 System.out.println("Invalid account selection.");
             }
@@ -244,9 +247,12 @@ public class CustomerMenu implements Menu {
 
     /**
      * Handles payment to another customer.
+     * Prompts for recipient, source and destination accounts, and amount, then processes the payment.
+     * @param customer the customer making the payment
      */
-    private void handlePayment() {
+    private void handlePayment(Customer customer) {
         try {
+            // Get recipient
             System.out.println("Enter recipient's name:");
             String recipientName = getInput();
             Customer recipient = customers.get(recipientName);
@@ -256,6 +262,7 @@ public class CustomerMenu implements Menu {
                 return;
             }
 
+            // Show payer's accounts
             List<Account> payerAccounts = customer.inquireAllAccounts();
             System.out.println("\nYour accounts:");
             for (int i = 0; i < payerAccounts.size(); i++) {
@@ -266,9 +273,11 @@ public class CustomerMenu implements Menu {
                 );
             }
 
+            // Get source account
             System.out.print("Select your account (1-" + payerAccounts.size() + "): ");
             int fromAccount = Integer.parseInt(getInput()) - 1;
 
+            // Show recipient's accounts
             List<Account> recipientAccounts = recipient.inquireAllAccounts();
             System.out.println("\nRecipient's accounts:");
             for (int i = 0; i < recipientAccounts.size(); i++) {
@@ -278,6 +287,7 @@ public class CustomerMenu implements Menu {
                 );
             }
 
+            // Get destination account
             System.out.print("Select recipient's account (1-" + recipientAccounts.size() + "): ");
             int toAccount = Integer.parseInt(getInput()) - 1;
 
@@ -293,12 +303,8 @@ public class CustomerMenu implements Menu {
                            amount);
                 
                 System.out.printf("Successfully paid $%.2f to %s%n", amount, recipientName);
-                logger.logTransaction(
-                    String.format("%s paid %s $%.2f", 
-                        customer.getName(), 
-                        recipientName, 
-                        amount)
-                );
+                logger.logTransaction(String.format("%s paid %s $%.2f", 
+                    customer.getName(), recipientName, amount));
             } else {
                 System.out.println("Invalid account selection.");
             }
