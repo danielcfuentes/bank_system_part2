@@ -57,7 +57,7 @@ public class BankOperations {
      */
     public void handleBankManager() {
         // Create bank manager menu
-        BankManagerMenu menu = new BankManagerMenu(logger, customers, null, null);
+        BankManagerMenu menu = new BankManagerMenu(logger, customers);
         
         // Handle menu operations until manager exits
         while (true) {
