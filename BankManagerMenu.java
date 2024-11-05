@@ -2,7 +2,7 @@ import java.util.*;
 
 /**
  * Implementation of Menu interface for bank manager operations.
- * Handles display and processing of manager-specific menu options.
+ * Handles display and processing of manager menu options.
  * @author Daniel Fuentes, Rogelio Lozano
  * @version 2.0
  */
@@ -13,10 +13,6 @@ public class BankManagerMenu implements Menu {
     private TransactionLog logger;
     /** Map of all customers in the system */
     private Map<String, Customer> customers;
-    /** Handler for new user creation */
-    private NewUsers newUsers;
-    /** Processor for transaction files */
-    private TransactionProcessor transactionProcessor;
 
     /**
      * Creates a new bank manager menu.
@@ -25,13 +21,10 @@ public class BankManagerMenu implements Menu {
      * @param newUsers system for creating new users
      * @param transactionProcessor processor for handling transactions
      */
-    public BankManagerMenu(TransactionLog logger, Map<String, Customer> customers, 
-                          NewUsers newUsers, TransactionProcessor transactionProcessor) {
+    public BankManagerMenu(TransactionLog logger, Map<String, Customer> customers) {
         this.scanner = new Scanner(System.in);
         this.logger = logger;
         this.customers = customers;
-        this.newUsers = newUsers;
-        this.transactionProcessor = transactionProcessor;
     }
 
     @Override
@@ -57,13 +50,13 @@ public class BankManagerMenu implements Menu {
                     handleAccountInquiry();
                     return true;
                 case "3":
-                    handleNewUser();
+                    // handleNewUser();
                     return true;
                 case "4":
-                    handleTransactionFile();
+                    // handleTransactionFile();
                     return true;
                 case "5":
-                    handleBankStatement();
+                    // handleBankStatement();
                     return true;
                 case "6":
                     return false;
@@ -172,79 +165,6 @@ public class BankManagerMenu implements Menu {
         
         if (!found) {
             System.out.println("Account not found.");
-        }
-    }
-
-    /**
-     * Handles creation of new bank users.
-     * Collects user information and creates accounts with appropriate credit limits.
-     */
-    private void handleNewUser() {
-        Map<String, String> userData = new HashMap<>();
-        
-        System.out.println("\nEnter new user information:");
-        System.out.println("First Name:");
-        userData.put("firstName", getInput());
-        
-        System.out.println("Last Name:");
-        userData.put("lastName", getInput());
-        
-        System.out.println("Date of Birth (DD-MMM-YY):");
-        userData.put("dob", getInput());
-        
-        System.out.println("Address:");
-        userData.put("address", getInput());
-        
-        System.out.println("City:");
-        userData.put("city", getInput());
-        
-        System.out.println("State:");
-        userData.put("state", getInput());
-        
-        System.out.println("ZIP Code:");
-        userData.put("zipCode", getInput());
-        
-        System.out.println("Phone Number:");
-        userData.put("phoneNumber", getInput());
-        
-        System.out.println("Credit Score (300-850):");
-        String creditScore = getInput();
-        try {
-            int score = Integer.parseInt(creditScore);
-            if (score < 300 || score > 850) {
-                System.out.println("Invalid credit score. Must be between 300 and 850.");
-                return;
-            }
-            userData.put("creditScore", creditScore);
-            
-            // Create the new customer
-            Customer newCustomer = newUsers.createUser(userData);
-            String fullName = userData.get("firstName") + " " + userData.get("lastName");
-            
-            // Check for name conflicts
-            if (customers.containsKey(fullName)) {
-                // Append a unique identifier
-                int suffix = 1;
-                String tempName = fullName;
-                while (customers.containsKey(tempName)) {
-                    tempName = fullName + " (" + suffix + ")";
-                    suffix++;
-                }
-                fullName = tempName;
-            }
-            
-            // Add to customers map
-            customers.put(fullName, newCustomer);
-            
-            // Display new account information
-            System.out.println("\nNew user created successfully!");
-            System.out.println("Customer ID: " + newCustomer.getCustomerID());
-            displayCustomerAccounts(newCustomer);
-            
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid credit score format. Please enter a number.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error creating user: " + e.getMessage());
         }
     }
 
